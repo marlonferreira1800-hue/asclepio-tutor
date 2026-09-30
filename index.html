@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MedTutor 3D - Professor Virtual Humano de Medicina</title>
+    <meta name="description" content="Plataforma educacional de Medicina com professor virtual em 3D, interação por voz e texto, anatomia tridimensional e simulações clínicas." />
+
+    <!-- Google Fonts: Outfit, Inter, JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+    <script type="module" crossorigin src="./assets/index-B4jOGRR8.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-qHROmDiY.css">
+  </head>
+  <body>
+    <div id="app">
+      <!-- 3D Three.js Canvas Container -->
+      <div id="canvas-container"></div>
+
+      <!-- UI Overlay Layer -->
+      <div class="ui-overlay">
+        <!-- Top App Header -->
+        <header class="header-bar ui-interactive">
+          <div class="brand-section">
+            <div class="brand-logo" id="brand-logo-btn" title="Reiniciar visão do laboratório">
+              <span id="logo-icon"></span>
+            </div>
+            <div class="brand-text">
+              <h1>MedTutor 3D</h1>
+              <span>Educação Médica & Simulação Clínica</span>
+            </div>
+          </div>
+
+          <!-- Study Mode Navigation -->
+          <nav class="modes-nav" id="modes-nav" aria-label="Modos de Estudo">
+            <button class="mode-btn active" data-mode="guided" id="mode-guided-btn">
+              <span class="btn-icon" data-icon="bookOpen"></span> Aula Guiada
+            </button>
+            <button class="mode-btn" data-mode="private" id="mode-private-btn">
+              <span class="btn-icon" data-icon="messageSquare"></span> Aula Particular
+            </button>
+            <button class="mode-btn" data-mode="case" id="mode-case-btn">
+              <span class="btn-icon" data-icon="fileText"></span> Caso Clínico
+            </button>
+            <button class="mode-btn" data-mode="anamnesis" id="mode-anamnesis-btn">
+              <span class="btn-icon" data-icon="user"></span> Anamnese
+            </button>
+            <button class="mode-btn" data-mode="auscultation" id="mode-auscultation-btn">
+              <span class="btn-icon" data-icon="stethoscope"></span> Ausculta
+            </button>
+            <button class="mode-btn" data-mode="oral_quiz" id="mode-quiz-btn">
+              <span class="btn-icon" data-icon="zap"></span> Quiz Oral
+            </button>
+            <button class="mode-btn" data-mode="simulado" id="mode-simulado-btn">
+              <span class="btn-icon" data-icon="award"></span> Simulado
+            </button>
+          </nav>
+
+          <!-- Top Actions -->
+          <div class="header-actions">
+            <!-- Student Level Selector -->
+            <button class="level-badge" id="level-btn" title="Alterar nível acadêmico">
+              <span id="student-level-label">Ciclo Clínico</span>
+              <span class="btn-icon" data-icon="chevronRight"></span>
+            </button>
+
+            <!-- Disciplines Menu Button -->
+            <button class="icon-btn" id="disciplines-btn" title="Disciplinas Médicas" aria-label="Disciplinas">
+              <span class="btn-icon" data-icon="layers"></span>
+            </button>
+
+            <!-- Audio Master Mute / Unmute -->
+            <button class="icon-btn active" id="audio-toggle-btn" title="Ativar/Desativar Som e Voz" aria-label="Áudio">
+              <span id="audio-icon-container"></span>
+            </button>
+
+            <!-- Tutor Avatar Customization Settings -->
+            <button class="icon-btn" id="settings-btn" title="Personalizar Professor 3D" aria-label="Configurações">
+              <span class="btn-icon" data-icon="settings"></span>
+            </button>
+          </div>
+        </header>
+
+        <!-- Mandatory Permanent Educational Disclaimer Banner -->
+        <div class="disclaimer-banner">
+          <span>⚠️ <strong>AVISO ÉTICO-LEGAL:</strong> Esta plataforma possui finalidade exclusivamente educacional e não substitui avaliação, diagnóstico ou tratamento realizado por um profissional de saúde.</span>
+        </div>
+
+        <!-- Left Floating Camera & Anatomy Tools -->
+        <aside class="left-floating-bar ui-interactive">
+          <!-- Camera View Presets -->
+          <div class="glass-panel tool-group">
+            <div class="box-title">
+              <span class="btn-icon" data-icon="camera"></span> Câmera 3D
+            </div>
+            <button class="tool-btn active" data-cam="room" id="cam-room-btn">
+              <span class="btn-icon" data-icon="rotate3d"></span> Sala Completa
+            </button>
+            <button class="tool-btn" data-cam="tutor" id="cam-tutor-btn">
+              <span class="btn-icon" data-icon="user"></span> Professor 3D
+            </button>
+            <button class="tool-btn" data-cam="heart" id="cam-heart-btn">
+              <span class="btn-icon" data-icon="heart"></span> Coração 3D
+            </button>
+            <button class="tool-btn" data-cam="board" id="cam-board-btn">
+              <span class="btn-icon" data-icon="activity"></span> Quadro Digital
+            </button>
+          </div>
+
+          <!-- 3D Heart Inspection Toggles -->
+          <div class="glass-panel heart-controls-box">
+            <div class="box-title">
+              <span class="btn-icon" data-icon="heart"></span> Anatomia Cardíaca
+            </div>
+            <button class="toggle-switch-btn" id="toggle-cutaway-btn">
+              <span>Corte Anatômico</span>
+              <div class="toggle-indicator"></div>
+            </button>
+            <button class="toggle-switch-btn active" id="toggle-blood-btn">
+              <span>Fluxo Sanguíneo</span>
+              <div class="toggle-indicator"></div>
+            </button>
+            <button class="toggle-switch-btn" id="toggle-conduction-btn">
+              <span>Sistema Elétrico</span>
+              <div class="toggle-indicator"></div>
+            </button>
+            <button class="toggle-switch-btn active" id="toggle-heartbeat-btn">
+              <span>Áudio do Batimento</span>
+              <div class="toggle-indicator"></div>
+            </button>
+          </div>
+        </aside>
+
+        <!-- Right Side Drawer Container (Dynamic for Modules, Auscultation, Cases, Disciplines) -->
+        <aside class="glass-panel side-drawer ui-interactive" id="side-drawer" style="display: none;">
+          <div class="drawer-header">
+            <div class="drawer-title" id="drawer-title">
+              <span id="drawer-title-icon"></span>
+              <span id="drawer-title-text">Conteúdo</span>
+            </div>
+            <button class="close-btn" id="drawer-close-btn" aria-label="Fechar painel">
+              <span class="btn-icon" data-icon="x"></span>
+            </button>
+          </div>
+          <div class="drawer-body" id="drawer-body">
+            <!-- Dynamically populated via uiController.js -->
+          </div>
+        </aside>
+
+        <!-- Center Subtitle Display (Closed Captions) -->
+        <div class="glass-panel subtitle-container ui-interactive" id="subtitle-bar">
+          <div class="speaker-avatar" id="subtitle-avatar">Dr</div>
+          <div class="subtitle-content">
+            <div class="speaker-name" id="subtitle-speaker">Dr. Asclépio</div>
+            <div class="subtitle-text" id="subtitle-text">
+              Olá! Eu sou o Dr. Asclépio, seu professor virtual de Medicina. Selecione um modo acima ou faça uma pergunta falando ao microfone.
+            </div>
+          </div>
+          <div class="sound-wave" id="speaking-wave" style="display: none;">
+            <span></span><span></span><span></span><span></span>
+          </div>
+        </div>
+
+        <!-- Bottom Action Dock -->
+        <div class="bottom-dock ui-interactive">
+          <!-- Socratic Quick Action Chips -->
+          <div class="quick-chips-row">
+            <button class="chip-btn alert" id="chip-dont-understand">
+              💡 Não entendi (Simplificar)
+            </button>
+            <button class="chip-btn" id="chip-ask-question">
+              ❓ Faça uma pergunta
+            </button>
+            <button class="chip-btn" id="chip-show-3d">
+              🫀 Mostrar em 3D
+            </button>
+            <button class="chip-btn" id="chip-clinical-example">
+              🩺 Exemplo Clínico
+            </button>
+            <button class="chip-btn" id="chip-next-step">
+              ➡️ Próxima Etapa da Aula
+            </button>
+          </div>
+
+          <!-- Chat Input Bar -->
+          <div class="input-bar-container">
+            <input
+              type="text"
+              class="chat-input"
+              id="chat-input"
+              placeholder="Faça uma pergunta sobre Cardiologia, Anatomia ou Fisiologia..."
+              autocomplete="off"
+            />
+            <button class="mic-btn" id="mic-btn" title="Falar com o Professor (Microfone)" aria-label="Microfone">
+              <span id="mic-icon-container"></span>
+            </button>
+            <button class="send-btn" id="send-btn" title="Enviar pergunta" aria-label="Enviar">
+              <span class="btn-icon" data-icon="send"></span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Settings / Tutor Customization Modal -->
+      <dialog class="modal-overlay ui-interactive" id="settings-dialog" closedby="any" style="display: none;">
+        <div class="modal-card">
+          <div class="modal-header">
+            <h3 style="font-weight: 700; color: var(--cyan-primary);">Personalização do Professor & Estudo</h3>
+            <button class="close-btn" id="settings-close-btn" aria-label="Fechar">
+              <span class="btn-icon" data-icon="x"></span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div>
+              <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 8px;">
+                Escolha o Professor Virtual:
+              </label>
+              <div class="avatar-pick-grid">
+                <div class="avatar-pick-card active" data-avatar="asclepio">
+                  <div style="font-size: 2rem;">👨‍⚕️</div>
+                  <div class="avatar-pick-name">Dr. Asclépio</div>
+                  <div class="avatar-pick-role">Cardiologia Clínica</div>
+                </div>
+                <div class="avatar-pick-card" data-avatar="sofia">
+                  <div style="font-size: 2rem;">👩‍⚕️</div>
+                  <div class="avatar-pick-name">Dra. Sofia Mendes</div>
+                  <div class="avatar-pick-role">Fisiologia & Semiologia</div>
+                </div>
+                <div class="avatar-pick-card" data-avatar="lucas">
+                  <div style="font-size: 2rem;">🧑‍⚕️</div>
+                  <div class="avatar-pick-name">Dr. Lucas Rocha</div>
+                  <div class="avatar-pick-role">Residente de Clínica</div>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 6px;">
+                Estilo Pedagógico:
+              </label>
+              <select id="pedagogic-style-select" style="width: 100%; padding: 10px; border-radius: 8px; background: #0f172a; border: 1px solid var(--border-glass); color: #fff; font-family: inherit;">
+                <option value="socratic">Socrático & Questionador (Método de Perguntas e Respostas)</option>
+                <option value="empathic">Empático & Prático (Foco na Beira do Leito e Analogias de Feynman)</option>
+                <option value="academic">Rigoroso & Acadêmico (Foco em Fisiopatologia e Evidências)</option>
+              </select>
+            </div>
+
+            <div>
+              <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 6px;">
+                Nível de Ensino Médico:
+              </label>
+              <select id="academic-level-select" style="width: 100%; padding: 10px; border-radius: 8px; background: #0f172a; border: 1px solid var(--border-glass); color: #fff; font-family: inherit;">
+                <option value="Ciclo Básico">Ciclo Básico (1º ao 2º ano)</option>
+                <option value="Ciclo Clínico" selected>Ciclo Clínico (3º ao 4º ano)</option>
+                <option value="Internato">Internato Médico (5º ao 6º ano)</option>
+                <option value="Residência">Residência Médica & Pós-Graduação</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </dialog>
+    </div>
+
+    <!-- Main Module Application Script -->
+  </body>
+</html>
