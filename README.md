@@ -111,3 +111,13 @@ npm run build
 ```
 
 Abra `http://localhost:3000/` no navegador para interagir com o **MedTutor 3D**!
+
+---
+
+## 🐙 Repositório GitHub
+
+```bash
+git remote add origin https://github.com/marlonferreira1800-hue/asclepio-tutor.git
+git branch -M main
+git push -u origin main
+```
